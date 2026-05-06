@@ -189,30 +189,28 @@ def run_knowledge_agent(state: TicketState) -> None:
 
 
 def run_workflow_agent(state: TicketState) -> None:
-    """
-    Workflow Agent: executes automated fixes.
-    NOT YET BUILT — handles the user confirmation gate for now.
-    """
-    # Ask for confirmation if we haven't yet
+
+        # Expect confirmation to already exist in state from the UI/API layer
     if state.user_confirmed is None:
-        msg = (
-            "I can attempt to automatically reset your password. "
-            "Should I proceed? (Reply 'yes' to confirm or 'no' to escalate to a human.)"
-        )
         state.workflow_result = "awaiting_confirmation"
+
+        msg = (
+            "I can attempt to automatically resolve this issue. "
+            "Would you like me to proceed?"
+        )
+
         state.add_message("assistant", "workflow_agent", msg)
-        print(f"[WORKFLOW]   {msg}")
+        print(f"[WORKFLOW] {msg}")
+        return
+    
+    if state.user_confirmed is False:
+        state.workflow_result = "not_attempted"
 
-        # In a real app this would pause and wait for user input via your UI.
-        # Here we read from stdin so you can test interactively.
-        answer = input("Your answer (yes/no): ").strip().lower()
-        state.user_confirmed = answer == "yes"
+        msg = "User declined automation. Routing to escalation."
 
-        if not state.user_confirmed:
-            state.workflow_result = "not_attempted"
-            state.add_message("assistant", "workflow_agent", "User declined. Routing to escalation.")
-            print("[WORKFLOW]   User declined. Routing to escalation.")
-            return
+        state.add_message("assistant", "workflow_agent", msg)
+        print(f"[WORKFLOW] {msg}")
+        return
 
     # ── YOUR AGENT GOES HERE (when built) ────────────────────────────────
     # result = your_workflow_agent.execute(state.ticket_category, state.employee_id)
@@ -360,6 +358,8 @@ if __name__ == "__main__":
     initial_state = TicketState(
         ticket_text="I forgot my password and can't log in.",
         employee_id="emp_00123",
+        user_confirmed=True,
+
     )
 
     orchestrator = Orchestrator(max_steps=10)
