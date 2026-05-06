@@ -316,14 +316,11 @@ class Orchestrator:
                 break
 
             agent_fn(state)
-            print()
+            if state.workflow_result == "awaiting_confirmation":
+                print("[ORCHESTRATOR] Waiting for user confirmation. Pausing flow.")
+                return state
+            print ()
 
-        else:
-            # Safety: exceeded max steps without resolving
-            print(f"[ORCHESTRATOR] Max steps ({self.max_steps}) reached. Force-escalating.")
-            run_escalation_agent(state)
-
-        return state
 
 
 # ─────────────────────────────────────────────
@@ -366,9 +363,10 @@ if __name__ == "__main__":
     final_state  = orchestrator.run(initial_state)
 
     print("\n=== Final State Summary ===")
-    print(f"Resolved:   {final_state.resolved}")
-    print(f"Ticket ID:  {final_state.ticket_id}")
-    print(f"Category:   {final_state.ticket_category}")
-    print(f"Priority:   {final_state.priority}")
+    print(f"Resolved:  {final_state.resolved}")
+    print(f"Ticket ID: {final_state.ticket_id}")
+    print(f"Category:  {final_state.ticket_category}")
+    print(f"Priority:  {final_state.priority}")
+
     if final_state.escalation_summary:
         print(f"\nEscalation summary:\n{final_state.escalation_summary}")
