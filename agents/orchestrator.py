@@ -289,38 +289,55 @@ AGENT_MAP: dict[str, callable] = {
 }
 
 class Orchestrator:
+
     def __init__(self, max_steps: int = 10):
         self.max_steps = max_steps
 
+
     def run(self, state: TicketState) -> TicketState:
+
         print("=== IT Support Orchestrator started ===\n")
+
         state.add_message("user", "user", state.ticket_text)
 
         for step in range(self.max_steps):
-            # 1. Ask the LLM what to do next
+
+            # 1. Ask router where to go
             next_agent = llm_router(state)
             state.next_agent = next_agent
-            print(f"[ROUTER]     → {next_agent.upper()}")
 
-            # 2. Terminal condition
+            print(f"[ROUTER]      → {next_agent.upper()}")
+
+            # 2. End condition
             if next_agent == "end":
                 state.resolved = True
                 print("\n=== Ticket resolved. ===")
-                break
+                return state
 
-            # 3. Run the chosen agent
+            # 3. Get selected agent
             agent_fn = AGENT_MAP.get(next_agent)
-            if agent_fn is None:
-                print(f"[ROUTER]     Unknown agent '{next_agent}', escalating.")
-                run_escalation_agent(state)
-                break
 
+            # 4. Unknown route safety
+            if agent_fn is None:
+                print(f"[ROUTER] Unknown agent '{next_agent}', escalating.")
+                run_escalation_agent(state)
+                return state
+
+            # 5. Run agent
             agent_fn(state)
+
+            # 6. Pause flow if waiting for user
             if state.workflow_result == "awaiting_confirmation":
                 print("[ORCHESTRATOR] Waiting for user confirmation. Pausing flow.")
                 return state
-            print ()
 
+            print()
+
+        # 7. Safety fallback
+        print(f"[ORCHESTRATOR] Max steps ({self.max_steps}) reached. Force-escalating.")
+        run_escalation_agent(state)
+
+        return state
 
 
 # ─────────────────────────────────────────────
@@ -368,5 +385,5 @@ if __name__ == "__main__":
     print(f"Category:  {final_state.ticket_category}")
     print(f"Priority:  {final_state.priority}")
 
-    if final_state.escalation_summary:
-        print(f"\nEscalation summary:\n{final_state.escalation_summary}")
+if final_state.escalation_summary:
+    print(f"\nEscalation summary:\n{final_state.escalation_summary}")
