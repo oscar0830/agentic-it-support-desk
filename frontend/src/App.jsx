@@ -25,7 +25,7 @@ export default function App() {
   function handleDone(r) {
     setResult(r)
     const newTicket = {
-      id: `TKT-${String(history.length + 1).padStart(4, '0')}`,
+      id: r.ticket_id || `TICKET-${String(history.length + 1).padStart(4, '0')}`,
       subject: ticket?.subject || ticket?.description?.slice(0, 40),
       category: ticket?.category || 'unknown',
       status: r.escalated ? 'escalated' : 'resolved',
