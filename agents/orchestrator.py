@@ -16,6 +16,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from typing import Optional
+from datetime import datetime
 
 from openai import OpenAI
 
@@ -155,6 +156,9 @@ def run_intake_agent(state: TicketState) -> None:
     state.ticket_category = "password"
     state.priority        = "P2"
     state.intent          = "password_reset"
+   
+    if not state.ticket_id:
+        state.ticket_id = f"TICKET-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     # ─────────────────────────────────────────────────────────────────────
 
     msg = (
