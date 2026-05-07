@@ -371,7 +371,7 @@ def orchestrator(user_input: str) -> dict:
         "messages": final_state.messages,
     }
 # ─────────────────────────────────────────────
-
+"""
 if __name__ == "__main__":
     initial_state = TicketState(
         ticket_text="I forgot my password and can't log in.",
@@ -391,3 +391,4 @@ if __name__ == "__main__":
 
 if final_state.escalation_summary:
     print(f"\nEscalation summary:\n{final_state.escalation_summary}")
+    """
