@@ -1,19 +1,19 @@
-from datetime import datetime
-
-
 def workflow_agent(context):
     print("\n[WORKFLOW AGENT] Processing workflow automation...")
-
+ 
     intent = context.get("intent", "unknown")
     priority = context.get("priority", "medium")
     user_input = context.get("user_input", "")
-    ticket_id = context.get(
-        "ticket_id",
-        f"TICKET-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    )
-
+    ticket_id = context.get("ticket_id")
+ 
+    if not ticket_id:
+        raise ValueError(
+            "[WORKFLOW AGENT] ticket_id is missing from context. "
+            "Intake Agent must create the ticket before Workflow runs."
+        )
+ 
     lower_input = user_input.lower()
-
+ 
     # -----------------------------------
     # PASSWORD RESET
     # -----------------------------------
@@ -31,7 +31,7 @@ def workflow_agent(context):
                 "A reset link has been sent to the user's backup email."
             )
         }
-
+ 
     # -----------------------------------
     # VPN SUPPORT
     # -----------------------------------
@@ -49,7 +49,7 @@ def workflow_agent(context):
                 "VPN credentials were refreshed and connection settings were reloaded."
             )
         }
-
+ 
     # -----------------------------------
     # NETWORK / WIFI SUPPORT
     # -----------------------------------
@@ -70,7 +70,7 @@ def workflow_agent(context):
                 "3. Run network diagnostics"
             )
         }
-
+ 
     # -----------------------------------
     # ACCOUNT LOCKOUT
     # -----------------------------------
@@ -88,7 +88,7 @@ def workflow_agent(context):
                 "The user account has been unlocked."
             )
         }
-
+ 
     # -----------------------------------
     # SOFTWARE INSTALL REQUEST
     # -----------------------------------
@@ -106,7 +106,7 @@ def workflow_agent(context):
                 "IT will review and approve the request."
             )
         }
-
+ 
     # -----------------------------------
     # UNKNOWN / NOT AUTOMATABLE
     # -----------------------------------
