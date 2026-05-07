@@ -242,7 +242,13 @@ def intake_agent(context: dict) -> dict:
     }).execute()
  
     ticket = response.data[0] if response.data else {}
-    ticket_id = ticket.get("ticket_id", ticket.get("id", "UNKNOWN"))
+    ticket_id = ticket.get("ticket_id", ticket.get("id"))
+ 
+    if not ticket_id:
+        raise RuntimeError(
+            "[INTAKE AGENT] Supabase insert returned no ticket_id. "
+            "Cannot proceed — downstream agents require a valid ticket_id."
+        )
  
     supabase.table("agent_metrics").insert({
         **metrics,
@@ -268,4 +274,3 @@ def intake_agent(context: dict) -> dict:
             + "\nI'll start working on a fix now."
         ),
     }
- 
