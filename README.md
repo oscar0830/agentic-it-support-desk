@@ -358,3 +358,5 @@ Frontend Deployment:
 # License
 
 Educational / Academic Project
+
+Built for academic demonstration purposes at San José State University.
