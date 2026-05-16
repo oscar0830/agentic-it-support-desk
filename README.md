@@ -335,7 +335,11 @@ Agentic IT Support Desk Project Team
 Contributors:
 
 * Oscar Aparicio
-* Team 3
+* Joshua Milstead
+* Ali Almathkur
+* Sachin Kalahasti
+* Tarun Subramanian
+* Weixin Luo
 
 ---
 
